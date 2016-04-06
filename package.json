@@ -1,0 +1,29 @@
+{
+  "name": "elm-to-js",
+  "version": "1.0.0",
+  "description": "Some of the awesome features of Elm, in Javascript",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "browserify main.js -o bundle.js",
+    "watch": "watchify main.js -o bundle.js -v -d"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JuanCaicedo/elm-to-js.git"
+  },
+  "keywords": [],
+  "author": "Juan Caicedo <retiredcanadianpoet@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/JuanCaicedo/elm-to-js/issues"
+  },
+  "homepage": "https://github.com/JuanCaicedo/elm-to-js#readme",
+  "dependencies": {
+    "browserify": "13.0.0",
+    "hyperscript-helpers": "2.1.1",
+    "main-loop": "3.2.0",
+    "virtual-dom": "2.1.1",
+    "watchify": "3.7.0"
+  }
+}
