@@ -19,7 +19,7 @@ var loop = main(initialState, render, vdom)
 document.querySelector('#content').appendChild(loop.target)
 
 function render(state) {
-  return table([
+  return table('.table.table-striped', [
     tr([
       td(state.firstName),
       td(state.lastName)
