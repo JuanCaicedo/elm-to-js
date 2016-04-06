@@ -33,7 +33,7 @@ function legislatorView(legislator){
 }
 
 function legislatorTable(legislators) {
-  return table('.table.table-striped', [
+  return table('.table.table-striped.col-xs-6', [
     tbody(
       R.map(legislatorView, legislators)
     )
@@ -42,5 +42,5 @@ function legislatorTable(legislators) {
 }
 
 function render(state) {
-  return div(legislatorTable(state.legislators));
+  return div('.container', legislatorTable(state.legislators));
 }
