@@ -2,6 +2,7 @@ var vdom = require('virtual-dom')
 var vh = require('virtual-dom/h');
 var hh = require('hyperscript-helpers')(vh);
 var main = require('main-loop')
+var R = require('ramda');
 
 var div   = hh.div;
 var span  = hh.span;
@@ -24,18 +25,18 @@ var loop = main(initialState, render, vdom)
 
 document.querySelector('#content').appendChild(loop.target)
 
+function legislatorView(legislator){
+  return tr([
+    td(legislator.firstName),
+    td(legislator.lastName)
+  ]);
+}
+
 function legislatorTable(legislators) {
   return table('.table.table-striped', [
-    tbody([
-      tr([
-        td(legislators[0].firstName),
-        td(legislators[0].lastName)
-      ]),
-      tr([
-        td(legislators[1].firstName),
-        td(legislators[1].lastName)
-      ])
-    ])
+    tbody(
+      R.map(legislatorView, legislators)
+    )
   ]);
 
 }
