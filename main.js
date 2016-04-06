@@ -1,7 +1,7 @@
-var vdom = require('virtual-dom')
+var vdom = require('virtual-dom');
 var vh = require('virtual-dom/h');
 var hh = require('hyperscript-helpers')(vh);
-var main = require('main-loop')
+var main = require('main-loop');
 var R = require('ramda');
 
 var div   = hh.div;
@@ -13,7 +13,14 @@ var tr    = hh.tr;
 var td    = hh.td;
 
 var initialState =  {
-  legislators: [{
+  availableLegislators: [{
+    firstName: 'Senator',
+    lastName: 'One'
+  }, {
+    firstName: 'Congresswoman',
+    lastName: 'Two'
+  }],
+  selectedLegislators: [{
     firstName: 'Juan',
     lastName: 'Caicedo'
   }, {
@@ -21,9 +28,6 @@ var initialState =  {
     lastName: 'Banov'
   }]
 };
-var loop = main(initialState, render, vdom)
-
-document.querySelector('#content').appendChild(loop.target)
 
 function legislatorView(legislator){
   return tr([
@@ -33,7 +37,7 @@ function legislatorView(legislator){
 }
 
 function legislatorListView(legislators) {
-  return table('.table.table-striped.col-xs-6', [
+  return table('.table.table-striped', [
     tbody(
       R.map(legislatorView, legislators)
     )
@@ -41,15 +45,20 @@ function legislatorListView(legislators) {
 }
 
 function legislatorSelectView(title, legislators) {
-  return div('col-xs-6', [
+  return div('.col-xs-6', [
     h1(title),
     legislatorListView(legislators)
-  ])
+  ]);
 
 }
 
 function render(state) {
   return div('.container', [
-    legislatorSelectView('Your Team', state.legislators)
+    legislatorSelectView('Your Team', state.selectedLegislators),
+    legislatorSelectView('Available', state.availableLegislators)
   ]);
 }
+
+var loop = main(initialState, render, vdom);
+
+document.querySelector('#content').appendChild(loop.target);
