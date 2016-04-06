@@ -32,15 +32,24 @@ function legislatorView(legislator){
   ]);
 }
 
-function legislatorTable(legislators) {
+function legislatorListView(legislators) {
   return table('.table.table-striped.col-xs-6', [
     tbody(
       R.map(legislatorView, legislators)
     )
   ]);
+}
+
+function legislatorSelectView(title, legislators) {
+  return div('col-xs-6', [
+    h1(title),
+    legislatorListView(legislators)
+  ])
 
 }
 
 function render(state) {
-  return div('.container', legislatorTable(state.legislators));
+  return div('.container', [
+    legislatorSelectView('Your Team', state.legislators)
+  ]);
 }
