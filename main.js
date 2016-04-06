@@ -7,10 +7,13 @@ var div  = hh.div;
 var span = hh.span;
 var h1   = hh.h1;
 
-var loop = main({ times: 0 }, render, vdom)
+var initialState =  {
+  title: "Fantasy Legislature"
+};
+var loop = main(initialState, render, vdom)
 
 document.querySelector('#content').appendChild(loop.target)
 
 function render(state) {
-  return h1('title juan');
+  return h1(state.title);
 }
