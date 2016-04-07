@@ -3,6 +3,9 @@ var vh = require('virtual-dom/h');
 var hh = require('hyperscript-helpers')(vh);
 var main = require('main-loop');
 var R = require('ramda');
+var EventEmitter = require('events');
+var emitter = new EventEmitter();
+
 
 var div   = hh.div;
 var span  = hh.span;
@@ -29,36 +32,72 @@ var initialState =  {
   }]
 };
 
-function legislatorView(legislator){
-  return tr([
+function legislatorView(address, legislator){
+  return tr('.class', {
+    onclick: function(ev) {
+      address({
+        type: 'Toggle',
+        data: legislator
+      });
+    }
+  }, [
     td(legislator.firstName),
     td(legislator.lastName)
   ]);
 }
 
-function legislatorListView(legislators) {
+function legislatorListView(address, legislators) {
+  _legislatorView = R.partial(legislatorView, [address]);
   return table('.table.table-striped', [
     tbody(
-      R.map(legislatorView, legislators)
+      R.map(_legislatorView, legislators)
     )
   ]);
 }
 
-function legislatorSelectView(title, legislators) {
+function legislatorSelectView(address, title, legislators) {
   return div('.col-xs-6', [
     h1(title),
-    legislatorListView(legislators)
+    legislatorListView(address, legislators)
   ]);
 
 }
 
-function render(state) {
+function render(address, state) {
   return div('.container', [
-    legislatorSelectView('Your Team', state.selectedLegislators),
-    legislatorSelectView('Available', state.availableLegislators)
+    legislatorSelectView(address, 'Your Team', state.selectedLegislators),
+    legislatorSelectView(address, 'Available', state.availableLegislators)
   ]);
 }
 
-var loop = main(initialState, render, vdom);
+function update(state, action) {
+  return {
+    availableLegislators: [{
+      firstName: 'test',
+      lastName: 'One'
+    }, {
+      firstName: 'test',
+      lastName: 'Two'
+    }],
+    selectedLegislators: [{
+      firstName: 'test',
+      lastName: 'Caicedo'
+    }, {
+      firstName: 'test',
+      lastName: 'Banov'
+    }]
+  };
+}
+
+function address(action) {
+  emitter.emit('update', action);
+};
+
+var renderFunction = R.partial(render, [address]);
+var loop = main(initialState, renderFunction, vdom);
 
 document.querySelector('#content').appendChild(loop.target);
+emitter.on('update', function(action) {
+  var newState = update(loop.state, action);
+  loop.update(newState);
+});
