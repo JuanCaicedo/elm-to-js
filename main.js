@@ -32,12 +32,15 @@ var initialState =  {
   }]
 };
 
-function legislatorView(address, legislator){
+function legislatorView(address, choice, legislator){
   return tr('.class', {
     onclick: function(ev) {
       address({
         type: 'Toggle',
-        data: legislator
+        data: {
+          type: choice,
+          data: legislator
+        }
       });
     }
   }, [
@@ -46,8 +49,8 @@ function legislatorView(address, legislator){
   ]);
 }
 
-function legislatorListView(address, legislators) {
-  _legislatorView = R.partial(legislatorView, [address]);
+function legislatorListView(address, choice, legislators) {
+  _legislatorView = R.partial(legislatorView, [address, choice]);
   return table('.table.table-striped', [
     tbody(
       R.map(_legislatorView, legislators)
@@ -55,38 +58,47 @@ function legislatorListView(address, legislators) {
   ]);
 }
 
-function legislatorSelectView(address, title, legislators) {
+function legislatorSelectView(address, choice, title, legislators) {
   return div('.col-xs-6', [
     h1(title),
-    legislatorListView(address, legislators)
+    legislatorListView(address, choice, legislators)
   ]);
 
 }
 
 function render(address, state) {
   return div('.container', [
-    legislatorSelectView(address, 'Your Team', state.selectedLegislators),
-    legislatorSelectView(address, 'Available', state.availableLegislators)
+    legislatorSelectView(address, 'Drop', 'Your Team', state.selectedLegislators),
+    legislatorSelectView(address, 'Select', 'Available', state.availableLegislators)
   ]);
 }
 
 function update(state, action) {
-  return {
-    availableLegislators: [{
-      firstName: 'test',
-      lastName: 'One'
-    }, {
-      firstName: 'test',
-      lastName: 'Two'
-    }],
-    selectedLegislators: [{
-      firstName: 'test',
-      lastName: 'Caicedo'
-    }, {
-      firstName: 'test',
-      lastName: 'Banov'
-    }]
-  };
+  // fallback case
+  var newState = state;
+  var newSelected;
+  var newAvailable;
+
+  if (action.type === 'Toggle') {
+    if (action.data.type === 'Drop') {
+      newSelected = R.reject(R.equals(action.data.data), state.selectedLegislators);
+      newAvailable = R.append(action.data.data, state.availableLegislators);
+
+      newState = R.merge(state, {
+        selectedLegislators: newSelected,
+        availableLegislators: newAvailable
+      });
+    } else if (action.data.type === 'Select') {
+      newSelected = R.append(action.data.data, state.selectedLegislators);
+      newAvailable = R.reject(R.equals(action.data.data), state.availableLegislators);
+
+      newState = R.merge(state, {
+        selectedLegislators: newSelected,
+        availableLegislators: newAvailable
+      });
+    }
+  }
+  return newState;
 }
 
 function address(action) {
