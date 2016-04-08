@@ -82,10 +82,11 @@ function render(address, state) {
 }
 
 function update(state, action) {
-  // fallback case
-  var newState = state;
   var newSelected;
   var newAvailable;
+
+  // fallback case
+  var newState = state;
 
   if (action.type === 'Toggle') {
     if (action.data.type === 'Drop') {
@@ -105,6 +106,14 @@ function update(state, action) {
         availableLegislators: newAvailable
       });
     }
+  } else if (action.type === 'PopulateAvailableLegislators') {
+    if (action.data.type === 'Success') {
+      newState = R.merge(state, {
+        availableLegislators: action.data.data
+      });
+    } else if (action.data.type === 'Error') {
+      console.log('Error', error);
+    }
   }
   return newState;
 }
@@ -119,24 +128,43 @@ function getJSON(url, params) {
   });
 };
 
-// request(dataUrl, dataParams, function(err, data) {
-//   console.log(err);
-// });
+function decodeLegislator(legislator) {
+  return {
+    firstName: legislator.first_name,
+    lastName: legislator.last_name
+  };
+}
 
-var jsonTask = getJSON(dataUrl, dataParams);
-jsonTask.fork(
-  function(error) {
-    console.log('error', error);
-  },
-  function(data) {
-    console.log('data', data);
-  }
-);
 var renderFunction = R.partial(render, [address]);
 var loop = main(initialState, renderFunction, vdom);
 
+var jsonTask = getJSON(dataUrl, dataParams);
+
+
+/* STATEFUL SECTION */
 document.querySelector('#content').appendChild(loop.target);
 emitter.on('update', function(action) {
   var newState = update(loop.state, action);
   loop.update(newState);
 });
+
+jsonTask.fork(
+  function(error) {
+    address({
+      type: 'PopulateAvailableLegislators',
+      data: {
+        type: 'Error',
+        data: error
+      }
+    });
+  },
+  function(response) {
+    address({
+      type: 'PopulateAvailableLegislators',
+      data: {
+        type: 'Success',
+        data: R.map(decodeLegislator, response.results)
+      }
+    });
+  }
+);
