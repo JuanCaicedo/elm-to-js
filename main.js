@@ -4,8 +4,8 @@ var hh = require('hyperscript-helpers')(vh);
 var main = require('main-loop');
 var R = require('ramda');
 var EventEmitter = require('events');
-var emitter = new EventEmitter();
-
+var Task = require('data.task');
+var $ = require('jquery');
 
 var div   = hh.div;
 var span  = hh.span;
@@ -14,6 +14,14 @@ var table = hh.table;
 var tbody = hh.tbody;
 var tr    = hh.tr;
 var td    = hh.td;
+
+var emitter = new EventEmitter();
+var dataUrl = 'https://congress.api.sunlightfoundation.com/legislators';
+var dataParams = {
+  'apikey': 'd6ef0d61cbd241bc9d89109e4f70e128',
+  'per_page': 'all'
+};
+
 
 var initialState =  {
   availableLegislators: [{
@@ -105,6 +113,25 @@ function address(action) {
   emitter.emit('update', action);
 };
 
+function getJSON(url, params) {
+  return new Task(function(reject, result) {
+    $.getJSON(url, params, result).fail(reject);
+  });
+};
+
+// request(dataUrl, dataParams, function(err, data) {
+//   console.log(err);
+// });
+
+var jsonTask = getJSON(dataUrl, dataParams);
+jsonTask.fork(
+  function(error) {
+    console.log('error', error);
+  },
+  function(data) {
+    console.log('data', data);
+  }
+);
 var renderFunction = R.partial(render, [address]);
 var loop = main(initialState, renderFunction, vdom);
 
