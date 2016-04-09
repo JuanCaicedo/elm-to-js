@@ -22,10 +22,12 @@
   "dependencies": {
     "bootstrap": "3.3.6",
     "browserify": "13.0.0",
+    "chai": "3.5.0",
     "data.task": "3.0.0",
     "hyperscript-helpers": "2.1.1",
     "jquery": "2.2.3",
     "main-loop": "3.2.0",
+    "mocha": "2.4.5",
     "ramda": "0.20.1",
     "virtual-dom": "2.1.1",
     "watchify": "3.7.0"
