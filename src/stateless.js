@@ -12,28 +12,28 @@ var tbody = hh.tbody;
 var tr    = hh.tr;
 var td    = hh.td;
 
-var legislatorView = function (address, choice, legislator) {
+var action = function(type, data) {
+  return {
+    type: type,
+    data: data
+  };
+};
+
+var legislatorView = R.curry(function (address, choice, legislator) {
   return tr('.container-fluid', {
     onclick: function(ev) {
-      address({
-        type: 'Toggle',
-        data: {
-          type: choice,
-          data: legislator
-        }
-      });
+      address(action('Toggle', action(choice, legislator)));
     }
   }, [
     td('.col-xs-6', legislator.firstName),
     td('.col-xs-6', legislator.lastName)
   ]);
-};
+});
 
 var legislatorListView = function (address, choice, legislators) {
-  _legislatorView = R.partial(legislatorView, [address, choice]);
   return table('.table.table-striped', [
     tbody(
-      R.map(_legislatorView, legislators)
+      R.map(legislatorView(address, choice), legislators)
     )
   ]);
 };
@@ -46,12 +46,12 @@ var legislatorSelectView = function (address, choice, title, legislators) {
 
 };
 
-var render = function (address, state) {
+var render = R.curry(function (address, state) {
   return div('.container', [
     legislatorSelectView(address, 'Drop', 'Your Team', state.selectedLegislators),
     legislatorSelectView(address, 'Select', 'Available', state.availableLegislators)
   ]);
-};
+});
 
 var update = function (state, action) {
   var newSelected;
@@ -103,6 +103,34 @@ var decodeLegislator = function (legislator) {
   };
 };
 
+var fetchLegislators = function(address, jsonTask) {
+  jsonTask.fork(
+    function(error) {
+      address(
+        action(
+          'PopulateAvailableLegislators',
+          action(
+            'Error',
+            error
+          )
+        )
+      );
+    },
+    function(response) {
+      address(
+        action(
+          'PopulateAvailableLegislators',
+          action(
+            'Success',
+            R.map(decodeLegislator, response.results)
+          )
+        )
+      );
+    }
+  );
+};
+
+
 module.exports = {
   legislatorView: legislatorView,
   legislatorListView: legislatorListView,
@@ -110,5 +138,6 @@ module.exports = {
   render: render,
   update: update,
   getJSON: getJSON,
+  fetchLegislators: fetchLegislators,
   decodeLegislator: decodeLegislator
 };

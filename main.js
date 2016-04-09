@@ -6,6 +6,7 @@ var mainLoop = require('main-loop');
 var stateless = require('./src/stateless.js');
 var render = stateless.render;
 var getJSON = stateless.getJSON;
+var fetchLegislators = stateless.fetchLegislators;
 var update = stateless.update;
 var decodeLegislator = stateless.decodeLegislator;
 
@@ -41,10 +42,7 @@ function address(action) {
 };
 
 function main() {
-  var renderFunction = R.partial(render, [address]);
-  var loop = mainLoop(initialState, renderFunction, vdom);
-
-  var jsonTask = getJSON(dataUrl, dataParams);
+  var loop = mainLoop(initialState, render(address), vdom);
 
   document.querySelector('#content').appendChild(loop.target);
   emitter.on('update', function(action) {
@@ -52,26 +50,9 @@ function main() {
     loop.update(newState);
   });
 
-  jsonTask.fork(
-    function(error) {
-      address({
-        type: 'PopulateAvailableLegislators',
-        data: {
-          type: 'Error',
-          data: error
-        }
-      });
-    },
-    function(response) {
-      address({
-        type: 'PopulateAvailableLegislators',
-        data: {
-          type: 'Success',
-          data: R.map(decodeLegislator, response.results)
-        }
-      });
-    }
-  );
+  var jsonTask = getJSON(dataUrl, dataParams);
+  fetchLegislators(address, jsonTask);
+
 }
 
 main();
