@@ -13,7 +13,7 @@ var tr    = hh.tr;
 var td    = hh.td;
 
 var legislatorView = function (address, choice, legislator) {
-  return tr('.class', {
+  return tr('.container-fluid', {
     onclick: function(ev) {
       address({
         type: 'Toggle',
@@ -24,8 +24,8 @@ var legislatorView = function (address, choice, legislator) {
       });
     }
   }, [
-    td(legislator.firstName),
-    td(legislator.lastName)
+    td('.col-xs-6', legislator.firstName),
+    td('.col-xs-6', legislator.lastName)
   ]);
 };
 
