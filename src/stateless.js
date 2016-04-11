@@ -30,26 +30,21 @@ var legislatorView = R.curry(function (address, choice, legislator) {
   ]);
 });
 
-var legislatorListView = function (address, choice, legislators) {
-  return table('.table.table-striped', [
-    tbody(
-      R.map(legislatorView(address, choice), legislators)
-    )
-  ]);
-};
-
-var legislatorSelectView = function (address, choice, title, legislators) {
+var legislatorTableView = function (address, choice, title, legislators) {
   return div('.col-xs-6', [
     h1(title),
-    legislatorListView(address, choice, legislators)
+    table('.table.table-striped', [
+      tbody(
+        R.map(legislatorView(address, choice), legislators)
+      )
+    ])
   ]);
-
 };
 
 var render = R.curry(function (address, state) {
   return div('.container', [
-    legislatorSelectView(address, 'Drop', 'Your Team', state.selectedLegislators),
-    legislatorSelectView(address, 'Select', 'Available', state.availableLegislators)
+    legislatorTableView(address, 'Drop', 'Your Team', state.selectedLegislators),
+    legislatorTableView(address, 'Select', 'Available', state.availableLegislators)
   ]);
 });
 
@@ -133,8 +128,7 @@ var fetchLegislators = function(address, jsonTask) {
 
 module.exports = {
   legislatorView: legislatorView,
-  legislatorListView: legislatorListView,
-  legislatorSelectView: legislatorSelectView,
+  legislatorTableView: legislatorTableView,
   render: render,
   update: update,
   getJSON: getJSON,

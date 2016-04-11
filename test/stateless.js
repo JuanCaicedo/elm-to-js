@@ -1,7 +1,7 @@
 var expect = require('chai').expect;
 var stateless = require('../src/stateless');
 var legislatorView = stateless.legislatorView;
-var legislatorListView = stateless.legislatorListView;
+var legislatorTableView = stateless.legislatorTableView;
 var update = stateless.update;
 
 var noopAddress = function(){};
@@ -65,14 +65,14 @@ describe('legislatorView', function() {
 
 });
 
-describe('legislatorListView', function() {
+describe('legislatorTableView', function() {
 
   it('returns a row per legislator', function() {
     var legislators = [{}, {}, {}];
-    var view = legislatorListView(noopAddress, 'test', legislators);
+    var view = legislatorTableView(noopAddress, 'choice', 'title', legislators);
 
-    expect(view).to.have.deep.property('.children[0].children')
-      .and.to.have.length(3);
+    var rows = view.children[1].children[0].children;
+    expect(rows).to.have.length(3);
   });
 
 });
