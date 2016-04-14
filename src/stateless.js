@@ -98,6 +98,8 @@ var decodeLegislator = function (legislator) {
   };
 };
 
+// not really a stateless function, but depends on address and
+// decodeLegislator
 var fetchLegislators = function(address, jsonTask) {
   jsonTask.fork(
     function(error) {
